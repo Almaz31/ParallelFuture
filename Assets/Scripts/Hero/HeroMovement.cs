@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Tilemaps;
@@ -16,6 +17,8 @@ public class HeroMovement : MonoBehaviour
     
     private bool isGrounded;
     private bool doubleJump;
+    public bool flip;//#1
+    
 
     private Rigidbody2D rb;
     private float horizontal;
@@ -71,14 +74,19 @@ public class HeroMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, -jumpForce * 2);
         }
     }
-    private void Flip()
+    public void Flip()
     {
+        
         if (horizontal > 0)
         {
             this.transform.localScale = Vector3.one;
+            flip = true;//right #2
+            return;
         }else if (horizontal < 0)
         {
             this.transform.localScale = new Vector3(-1,1,1);
+            flip = false;//left #3
+            return;
         }
     }
 
