@@ -15,6 +15,7 @@ public class ShootBullets : MonoBehaviour
 
     private byte bulletCount;
     private bool isReloading = false;
+    private bool isShooting = false;
 
     private void Awake()
     {
@@ -28,12 +29,17 @@ public class ShootBullets : MonoBehaviour
         {
             StartCoroutine(ShootLoop());
         }
+
+        if (Input.GetKeyUp(KeyCode.X))
+        {
+            isShooting = false; 
+        }
     }
 
-    private void FireBullet() 
+    private void FireBullet()
     {
-        Quaternion rotation = Quaternion.Euler(0, 0, HeroMovement.flip ? -90 : 90);
-        Vector2 shootDirection = HeroMovement.flip ? direction : -direction;
+        Quaternion rotation = Quaternion.Euler(0, 0, HeroMovement.flip ? -90 : 90);//bullet rotate
+        Vector2 shootDirection = HeroMovement.flip ? direction : -direction; //referance heroMovement
 
         GameObject bulletInstance = Instantiate(bulletPrefab, bulletSpawnPoint.position, rotation);
         Bullet bullet = bulletInstance.GetComponent<Bullet>();
@@ -44,35 +50,34 @@ public class ShootBullets : MonoBehaviour
 
     private IEnumerator ShootLoop()
     {
-        bulletCount--;
-        FireBullet(); 
-        yield return new WaitForSeconds(attackDelay);
+        isShooting = true; //start fire
 
-        
-        while (Input.GetKey(KeyCode.X))
+        while (isShooting && bulletCount > 0 && !isReloading)
         {
-            if (bulletCount <= 0)
+            FireBullet(); //fire
+
+            bulletCount--; 
+
+            if (bulletCount == 0)
             {
-                
-                StartCoroutine(Reload());
-                yield break;
+                StartCoroutine(Reload()); 
+                break;
             }
 
-            bulletCount--;
-            FireBullet(); 
-            yield return new WaitForSeconds(attackDelay);
+            yield return new WaitForSeconds(attackDelay); 
         }
     }
 
     private IEnumerator Reload()
     {
-        isReloading = true;
-        yield return new WaitForSeconds(reloadTime);
+        isReloading = true; //reload start
+
+        yield return new WaitForSeconds(reloadTime); //reloadtime
+
         bulletCount = bulletLimit; 
-        isReloading = false;
+        isReloading = false; 
     }
 
-    
     public void SetBulletLimit(byte newLimit)
     {
         bulletLimit = newLimit;
