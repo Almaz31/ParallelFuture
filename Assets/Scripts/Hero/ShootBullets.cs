@@ -6,7 +6,7 @@ public class ShootBullets : MonoBehaviour
     [SerializeField] private float bulletSpeed = 3f;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform bulletSpawnPoint;
-    private Vector2 direction = Vector2.right;
+    private Vector2 directionShot = Vector2.right;
     public HeroMovement HeroMovement;
 
     [SerializeField] private float attackDelay = 0.5f;
@@ -39,7 +39,7 @@ public class ShootBullets : MonoBehaviour
     private void FireBullet()
     {
         Quaternion rotation = Quaternion.Euler(0, 0, HeroMovement.flip ? -90 : 90);//bullet rotate
-        Vector2 shootDirection = HeroMovement.flip ? direction : -direction; //referance heroMovement
+        Vector2 shootDirection = HeroMovement.flip ? directionShot : -directionShot; //referance heroMovement
 
         GameObject bulletInstance = Instantiate(bulletPrefab, bulletSpawnPoint.position, rotation);
         Bullet bullet = bulletInstance.GetComponent<Bullet>();
