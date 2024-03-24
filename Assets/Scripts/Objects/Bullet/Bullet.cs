@@ -4,7 +4,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] private ParticleSystem bulletHitParticle;
-    [SerializeField] float xEnemyPower = 5f;
+    
     
 
     public void Shoot(Vector2 direction)
@@ -22,13 +22,8 @@ public class Bullet : MonoBehaviour
         if (damagetable != null)
         {
             damagetable.BulletDamage();
-            
-            
+                       
         }
-
-        
-
-
 
         if (collision.gameObject.CompareTag("Hero") || collision.gameObject.CompareTag("Bullet"))
         {

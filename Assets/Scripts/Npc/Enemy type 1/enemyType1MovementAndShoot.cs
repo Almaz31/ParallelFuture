@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class enemyType1MovementAndShoot : MonoBehaviour
 {
@@ -9,15 +10,22 @@ public class enemyType1MovementAndShoot : MonoBehaviour
     [SerializeField] Transform enemyGunPos;
     [SerializeField] Transform targetHero;
     public HeroNpcController heroNpcController;
-   
     
+
+
+    
+
     [SerializeField] float shootSpeed; 
     [SerializeField] float speedEnemy = 5f;
     [SerializeField] float attackRange = 5f;
+    
 
     private void Update()
     {
+        Flip();
         NPCTarget();
+
+        
     }
     public void EnemyAttack(Vector3 heroPoz)
     {
@@ -27,12 +35,13 @@ public class enemyType1MovementAndShoot : MonoBehaviour
             enemyType1Bullet bullet = bulletInstance.GetComponent<enemyType1Bullet>();
 
             Vector3 shootDirection = (heroPoz - enemyGunPos.position).normalized; //**
-
+            
             bullet.EnemyShoot(shootDirection * shootSpeed);
+            
             
         }             
     }
-    void NPCTarget()
+    public void NPCTarget()
     {       
         float distanceToTarget = Mathf.Abs(transform.position.x - targetHero.position.x);
      
@@ -41,9 +50,28 @@ public class enemyType1MovementAndShoot : MonoBehaviour
             float directionToTargetX = Mathf.Sign(targetHero.position.x - transform.position.x);
             //Quaternion rotation = Quaternion.Euler(0, Mathf.Sign(directionToTargetX)<0 ? 180 : -180 , 0);
             Vector3 moveVector = new Vector3(directionToTargetX * speedEnemy * Time.deltaTime, 0f, 0f);
+            
 
             //transform.rotation = rotation;
+            
+
             transform.Translate(moveVector);
+        }
+    }
+    public void Flip()
+    {
+
+        if (transform.position.x < targetHero.transform.position.x)
+        {
+            transform.localScale = Vector3.one;
+            
+            return;
+        }
+        else if (transform.position.x > targetHero.transform.position.x)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+            
+            return;
         }
     }
 

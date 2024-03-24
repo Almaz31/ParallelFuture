@@ -12,15 +12,27 @@ public class HeroNpcController : MonoBehaviour
     public enemyType1MovementAndShoot enemyShoot;
     [SerializeField] Transform HeroTransform;
     public bool isAttack = true;
+    
+    [SerializeField] float isAttackTime = 1f;
 
     private void Awake()
     {
         //enemyShoot = GetComponentInChildren<enemyType1MovementAndShoot>(); 
+
+        
     }
     private void Update()
     {
-        RaycastRotate();
-        HitEnemy();      
+
+
+        if (isAttack)
+        {
+            HitEnemy();
+            RaycastRotate();
+            
+        }
+
+            
     }
     public void HitEnemy()
     {
@@ -32,8 +44,17 @@ public class HeroNpcController : MonoBehaviour
 
             enemyShoot.EnemyAttack(transform.position);//referance fonks           
             Debug.DrawLine(transform.position, transform.position + transform.right * distance, Color.red);
+            StartCoroutine(FireCooldown());
         }   
     }
+
+    private IEnumerator FireCooldown()
+    {
+        isAttack = false; // Ateþ edilemez durumu ayarla
+        yield return new WaitForSeconds(isAttackTime); // Belirlenen süre kadar bekle
+        isAttack = true; // Ateþ edilebilir durumu ayarla
+    }
+
     private void RaycastRotate()
     {
         raycast.transform.Rotate(Vector3.forward * rotateSpeed * Time.deltaTime);
@@ -43,4 +64,5 @@ public class HeroNpcController : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position + transform.right * distance, Color.green);
 
     }
+    
 }
