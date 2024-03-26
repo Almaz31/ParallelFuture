@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class enemyType1MovementAndShoot : MonoBehaviour
@@ -10,20 +11,26 @@ public class enemyType1MovementAndShoot : MonoBehaviour
     [SerializeField] Transform enemyGunPos;
     [SerializeField] Transform targetHero;
     public HeroNpcController heroNpcController;
-    
 
 
-    
-
+    private bool canMove = true;
     [SerializeField] float shootSpeed; 
     [SerializeField] float speedEnemy = 5f;
     [SerializeField] float attackRange = 5f;
-    
 
+    private void Awake()
+    {
+        
+    }
     private void Update()
     {
         Flip();
-        NPCTarget();
+
+        if (canMove)
+        {
+            Invoke("NPCTarget", 1f);
+        }
+        
 
         
     }
@@ -53,10 +60,10 @@ public class enemyType1MovementAndShoot : MonoBehaviour
             
 
             //transform.rotation = rotation;
-            
-
             transform.Translate(moveVector);
+            canMove = true;
         }
+        else { canMove = false; }
     }
     public void Flip()
     {

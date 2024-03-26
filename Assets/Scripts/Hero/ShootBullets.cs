@@ -42,7 +42,7 @@ public class ShootBullets : MonoBehaviour
         Vector2 shootDirection = HeroMovement.flip ? directionShot : -directionShot; //referance heroMovement
 
         GameObject bulletInstance = Instantiate(bulletPrefab, bulletSpawnPoint.position, rotation);
-        Bullet bullet = bulletInstance.GetComponent<Bullet>();
+        BulletHero bullet = bulletInstance.GetComponent<BulletHero>();
 
         bullet.Shoot(shootDirection * bulletSpeed);
         Destroy(bulletInstance.gameObject, 6f);

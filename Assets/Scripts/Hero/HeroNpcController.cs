@@ -24,15 +24,13 @@ public class HeroNpcController : MonoBehaviour
     private void Update()
     {
 
-
         if (isAttack)
         {
             HitEnemy();
             RaycastRotate();
             
         }
-
-            
+           
     }
     public void HitEnemy()
     {

@@ -4,5 +4,7 @@ using UnityEngine;
 
 public interface IDamagetable 
 {
-    public void BulletDamage();
+    public void BulletDamageBasicEnemies(int takeDamage);//The damage dealt to low-level enemies
+
+
 }
