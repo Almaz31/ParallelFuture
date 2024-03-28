@@ -36,7 +36,7 @@ public class ShootBullets : MonoBehaviour
         }
     }
 
-    private void FireBullet()
+    public void FireBullet()
     {
         Quaternion rotation = Quaternion.Euler(0, 0, HeroMovement.flip ? -90 : 90);//bullet rotate
         Vector2 shootDirection = HeroMovement.flip ? directionShot : -directionShot; //referance heroMovement
@@ -48,7 +48,7 @@ public class ShootBullets : MonoBehaviour
         Destroy(bulletInstance.gameObject, 6f);
     }
 
-    private IEnumerator ShootLoop()
+    public IEnumerator ShootLoop()
     {
         isShooting = true; //start fire
 

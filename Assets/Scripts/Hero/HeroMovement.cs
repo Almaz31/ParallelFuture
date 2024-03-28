@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -18,13 +19,15 @@ public class HeroMovement : MonoBehaviour
     private bool isGrounded;
     private bool doubleJump;
     public bool flip;//#1
-    
+    private bool jumpRequest;
+    [SerializeField] private bool playingMobile = false;
 
     private Rigidbody2D rb;
     private float horizontal;
 
     private float vertical;
-    
+
+
 
     void Start()
     {
@@ -33,31 +36,49 @@ public class HeroMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
+        Debug.Log(doubleJump);
+        IsGrounded(); // Zemin kontrolü her fizik güncellemesinde yapýlýr
 
-        IsGrounded();
-        Move();
-        Jump();
+        if (jumpRequest) // Zýplama isteði varsa
+        {
+            if (isGrounded || doubleJump) // Eðer zemindeyse veya çift zýplama hakký varsa
+            {
+                Jump(); // Zýpla
+            }
+            jumpRequest = false; // Zýplama isteðini sýfýrla
+        }
         FallDown();
+        Move(); // Hareket et
     }
-    private void Update()
+    void Update()
     {
-        DoubleJump();
+        // Klavye kontrolü veya diðer frame tabanlý güncellemeler
+        if (!playingMobile)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnJumpButtonPressed(); // Klavyeden zýplama komutu
+            }
+        }
+
         Flip();
     }
     private void Move()
     {
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        if (!playingMobile)
+        {
+            horizontal = Input.GetAxis("Horizontal");
+        }
+        rb.velocity = new Vector2(horizontal * speed , rb.velocity.y); 
     }
     private void Jump()
     {
-        if (isGrounded && vertical > 0)
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Zýplama kuvvetini uygula
+        if (!isGrounded) // Eðer zeminde deðilse, çift zýplama hakkýný kullan
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            isGrounded = false;
-            doubleJump = true;
+            doubleJump = false;
         }
+        isGrounded = false; // Zemin kontrolü FixedUpdate içinde güncellenecek
     }
     private void DoubleJump()
     {
@@ -92,6 +113,83 @@ public class HeroMovement : MonoBehaviour
 
     private void IsGrounded()
     {
+        bool wasGrounded = isGrounded;
         isGrounded = Physics2D.OverlapCircle(GroundCheck.transform.position, GroundCheckRadius,GroundLayer);
+        if (isGrounded && !wasGrounded) // Eðer karakter yeniden zemine temas ettiyse
+        {
+            doubleJump = true; // Çift zýplama hakkýný yenile
+        }
     }
+
+    public void OnJumpButtonPressed()
+    {
+        
+      jumpRequest = true; // Zýplama isteðini ayarla
+          
+        
+    }
+
+
+
+    #region MobileMove
+
+
+    public void OnJumpTrue()
+    {
+        if (isGrounded)
+        {
+            jumpRequest = true; // Zýplama isteðini ayarla
+            
+        }
+        else if (!isGrounded && doubleJump)
+        {
+            // Ýkinci zýplama (çift zýplama) için ek kontrol
+            jumpRequest = true;
+            doubleJump = false;
+            
+        }
+    }
+    public void OnJumpFalse()
+    {
+        doubleJump = false;
+        jumpRequest = false;
+    }
+
+    
+
+
+    private void MobileController(float direction)
+    {
+        horizontal = direction;
+        Debug.Log(horizontal);
+    }
+    public void Left()
+    {
+        if (playingMobile)
+        {
+            MobileController(-1);
+        }
+        
+        
+    }
+    public void Right()
+    {
+        if (playingMobile)
+        {
+            MobileController(1);
+        }
+
+    }
+
+
+    public void Stop() 
+    {
+        if (playingMobile)
+        {
+            MobileController(0);
+        }
+
+    }
+    #endregion
+
 }
