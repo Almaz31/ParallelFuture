@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.Tilemaps;
+
 using UnityEngine;
 
 public class HeroMovement : MonoBehaviour
@@ -20,7 +20,7 @@ public class HeroMovement : MonoBehaviour
     private bool doubleJump;
     public bool flip;//#1
     private bool jumpRequest;
-    [SerializeField] private bool playingMobile = false;
+    public bool playingMobile = false;
 
     private Rigidbody2D rb;
     private float horizontal;
@@ -37,27 +37,27 @@ public class HeroMovement : MonoBehaviour
     void FixedUpdate()
     {
         Debug.Log(doubleJump);
-        IsGrounded(); // Zemin kontrolü her fizik güncellemesinde yapýlýr
+        IsGrounded(); 
 
-        if (jumpRequest) // Zýplama isteði varsa
+        if (jumpRequest) 
         {
-            if (isGrounded || doubleJump) // Eðer zemindeyse veya çift zýplama hakký varsa
+            if (isGrounded || doubleJump) 
             {
-                Jump(); // Zýpla
+                Jump(); 
             }
-            jumpRequest = false; // Zýplama isteðini sýfýrla
+            jumpRequest = false; 
         }
         FallDown();
-        Move(); // Hareket et
+        Move(); 
     }
     void Update()
     {
-        // Klavye kontrolü veya diðer frame tabanlý güncellemeler
+        
         if (!playingMobile)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                OnJumpButtonPressed(); // Klavyeden zýplama komutu
+                OnJumpButtonPressed(); 
             }
         }
 
@@ -73,21 +73,14 @@ public class HeroMovement : MonoBehaviour
     }
     private void Jump()
     {
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce); // Zýplama kuvvetini uygula
-        if (!isGrounded) // Eðer zeminde deðilse, çift zýplama hakkýný kullan
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce); 
+        if (!isGrounded) 
         {
             doubleJump = false;
         }
-        isGrounded = false; // Zemin kontrolü FixedUpdate içinde güncellenecek
+        isGrounded = false; 
     }
-    private void DoubleJump()
-    {
-        if (doubleJump && Input.GetKeyDown(KeyCode.Space))
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            doubleJump = false;
-        }
-    }
+   
     private void FallDown()
     {
         if (!isGrounded && vertical < 0)
@@ -115,37 +108,32 @@ public class HeroMovement : MonoBehaviour
     {
         bool wasGrounded = isGrounded;
         isGrounded = Physics2D.OverlapCircle(GroundCheck.transform.position, GroundCheckRadius,GroundLayer);
-        if (isGrounded && !wasGrounded) // Eðer karakter yeniden zemine temas ettiyse
+        if (isGrounded && !wasGrounded) 
         {
-            doubleJump = true; // Çift zýplama hakkýný yenile
+            doubleJump = true; 
         }
     }
 
     public void OnJumpButtonPressed()
     {
-        
-      jumpRequest = true; // Zýplama isteðini ayarla
+        if (doubleJump)
+            jumpRequest = true; 
           
         
     }
-
-
-
     #region MobileMove
-
-
     public void OnJumpTrue()
     {
         if (isGrounded)
         {
-            jumpRequest = true; // Zýplama isteðini ayarla
+            jumpRequest = true; 
             
         }
-        else if (!isGrounded && doubleJump)
+        if (!isGrounded && doubleJump)
         {
-            // Ýkinci zýplama (çift zýplama) için ek kontrol
+            
             jumpRequest = true;
-            doubleJump = false;
+            doubleJump = true;
             
         }
     }
@@ -154,9 +142,6 @@ public class HeroMovement : MonoBehaviour
         doubleJump = false;
         jumpRequest = false;
     }
-
-    
-
 
     private void MobileController(float direction)
     {
@@ -169,8 +154,7 @@ public class HeroMovement : MonoBehaviour
         {
             MobileController(-1);
         }
-        
-        
+               
     }
     public void Right()
     {
@@ -178,10 +162,7 @@ public class HeroMovement : MonoBehaviour
         {
             MobileController(1);
         }
-
     }
-
-
     public void Stop() 
     {
         if (playingMobile)

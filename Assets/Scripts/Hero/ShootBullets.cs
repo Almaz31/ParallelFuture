@@ -36,6 +36,7 @@ public class ShootBullets : MonoBehaviour
         }
     }
 
+
     public void FireBullet()
     {
         Quaternion rotation = Quaternion.Euler(0, 0, HeroMovement.flip ? -90 : 90);//bullet rotate
@@ -68,7 +69,25 @@ public class ShootBullets : MonoBehaviour
         }
     }
 
-    private IEnumerator Reload()
+    public void PushAttackMobile()
+    {
+        if ( bulletCount > 0 && !isReloading)
+        {
+            StartCoroutine(ShootLoop());
+        }
+
+        if (isReloading)
+        {
+            isShooting = false;
+        }
+    }
+
+    public void ReleaseAttackMobile()
+    {
+        isShooting = false;
+    }
+
+private IEnumerator Reload()
     {
         isReloading = true; //reload start
 
@@ -78,9 +97,5 @@ public class ShootBullets : MonoBehaviour
         isReloading = false; 
     }
 
-    public void SetBulletLimit(byte newLimit)
-    {
-        bulletLimit = newLimit;
-        bulletCount = bulletLimit;
-    }
+  
 }
