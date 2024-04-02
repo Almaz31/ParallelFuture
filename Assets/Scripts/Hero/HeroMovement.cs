@@ -1,7 +1,8 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Tilemaps;
+using Unity.VisualScripting;
+
 using UnityEngine;
 
 public class HeroMovement : MonoBehaviour
@@ -18,13 +19,15 @@ public class HeroMovement : MonoBehaviour
     private bool isGrounded;
     private bool doubleJump;
     public bool flip;//#1
-    
+    private bool jumpRequest;
+    public bool playingMobile = false;
 
     private Rigidbody2D rb;
     private float horizontal;
 
     private float vertical;
-    
+
+
 
     void Start()
     {
@@ -33,40 +36,51 @@ public class HeroMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
+        Debug.Log(doubleJump);
+        IsGrounded(); 
 
-        IsGrounded();
-        Move();
-        Jump();
+        if (jumpRequest) 
+        {
+            if (isGrounded || doubleJump) 
+            {
+                Jump(); 
+            }
+            jumpRequest = false; 
+        }
         FallDown();
+        Move(); 
     }
-    private void Update()
+    void Update()
     {
-        DoubleJump();
+        
+        if (!playingMobile)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnJumpButtonPressed(); 
+            }
+        }
+
         Flip();
     }
     private void Move()
     {
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        if (!playingMobile)
+        {
+            horizontal = Input.GetAxis("Horizontal");
+        }
+        rb.velocity = new Vector2(horizontal * speed , rb.velocity.y); 
     }
     private void Jump()
     {
-        if (isGrounded && vertical > 0)
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce); 
+        if (!isGrounded) 
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            isGrounded = false;
-            doubleJump = true;
-        }
-    }
-    private void DoubleJump()
-    {
-        if (doubleJump && Input.GetKeyDown(KeyCode.Space))
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             doubleJump = false;
         }
+        isGrounded = false; 
     }
+   
     private void FallDown()
     {
         if (!isGrounded && vertical < 0)
@@ -92,6 +106,71 @@ public class HeroMovement : MonoBehaviour
 
     private void IsGrounded()
     {
+        bool wasGrounded = isGrounded;
         isGrounded = Physics2D.OverlapCircle(GroundCheck.transform.position, GroundCheckRadius,GroundLayer);
+        if (isGrounded && !wasGrounded) 
+        {
+            doubleJump = true; 
+        }
     }
+
+    public void OnJumpButtonPressed()
+    {
+        if (doubleJump)
+            jumpRequest = true; 
+          
+        
+    }
+    #region MobileMove
+    public void OnJumpTrue()
+    {
+        if (isGrounded)
+        {
+            jumpRequest = true; 
+            
+        }
+        if (!isGrounded && doubleJump)
+        {
+            
+            jumpRequest = true;
+            doubleJump = true;
+            
+        }
+    }
+    public void OnJumpFalse()
+    {
+        doubleJump = false;
+        jumpRequest = false;
+    }
+
+    private void MobileController(float direction)
+    {
+        horizontal = direction;
+        Debug.Log(horizontal);
+    }
+    public void Left()
+    {
+        if (playingMobile)
+        {
+            MobileController(-1);
+        }
+               
+    }
+    public void Right()
+    {
+        if (playingMobile)
+        {
+            MobileController(1);
+        }
+    }
+    public void Stop() 
+    {
+        if (playingMobile)
+        {
+            MobileController(0);
+        }
+
+    }
+    #endregion
+
 }
