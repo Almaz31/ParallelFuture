@@ -14,7 +14,7 @@ public class MainMenuScripts : MonoBehaviour
     public void ButtonStartGame()
     {
         int mainScene = 1;
-
+        Time.timeScale = 1;
         SceneManager.LoadScene(mainScene);
     }
     public void AboutUsClick()
