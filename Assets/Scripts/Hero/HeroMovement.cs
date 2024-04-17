@@ -47,7 +47,7 @@ public class HeroMovement : MonoBehaviour
             }
             jumpRequest = false; 
         }
-        FallDown();
+        //FallDown();
         Move(); 
     }
     void Update()
@@ -81,13 +81,7 @@ public class HeroMovement : MonoBehaviour
         isGrounded = false; 
     }
    
-    private void FallDown()
-    {
-        if (!isGrounded && vertical < 0)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, -jumpForce * 2);
-        }
-    }
+    
     public void Flip()
     {
         
