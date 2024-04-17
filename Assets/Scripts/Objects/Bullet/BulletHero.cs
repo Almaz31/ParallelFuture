@@ -30,8 +30,14 @@ public class BulletHero : MonoBehaviour
             if (targetBasicEnemies != null)
             {
                 targetBasicEnemies.BulletDamageBasicEnemies(hitDamage);
+                
+                Animator animCollider = collision.GetComponentInChildren <Animator>();  
+                animCollider.SetTrigger("hurt");
+               
+
+                targetBasicEnemies.BasicEnemiesDeath();//enemies death Check
             }
-            targetBasicEnemies.BasicEnemiesDeath(); //enemies death Check
+             
        
         }
 
